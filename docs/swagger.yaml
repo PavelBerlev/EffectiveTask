@@ -1,0 +1,194 @@
+basePath: /
+definitions:
+  dto.SubscribeCreateRequest:
+    properties:
+      end_date:
+        type: string
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    required:
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+  dto.SubscribeTotalCostRequest:
+    properties:
+      end_date:
+        type: string
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    required:
+    - end_date
+    - start_date
+    type: object
+  dto.SubscribeUpdateRequest:
+    properties:
+      end_date:
+        type: string
+      id:
+        type: integer
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    required:
+    - id
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для управления подписками
+  title: EffectiveTask API
+  version: "1.0"
+paths:
+  /subscribe:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список подписок с пагинацией
+      parameters:
+      - default: 100
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Список подписок
+      tags:
+      - subscriptions
+    patch:
+      consumes:
+      - application/json
+      description: Обновляет поля подписки по ID
+      parameters:
+      - description: Update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SubscribeUpdateRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Обновить подписку
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новую подписку (soft-deleted записи игнорируются при проверке
+        существования)
+      parameters:
+      - description: Create request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SubscribeCreateRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Создать подписку
+      tags:
+      - subscriptions
+  /subscribe/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Soft-delete подписки по ID (устанавливает deleted_at)
+      parameters:
+      - description: Subscribe ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: id
+          schema:
+            additionalProperties:
+              format: int64
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Удалить подписку
+      tags:
+      - subscriptions
+    get:
+      consumes:
+      - application/json
+      description: Возвращает подписку по ID
+      parameters:
+      - description: Subscribe ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Получить подписку
+      tags:
+      - subscriptions
+  /subscribe/total-cost:
+    post:
+      consumes:
+      - application/json
+      description: Возвращает суммарную цену подписок за период. Фильтрация по user_id
+        ИЛИ service_name (обязательно один из них).
+      parameters:
+      - description: Total cost request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SubscribeTotalCostRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Подсчитать суммарную стоимость подписок за период
+      tags:
+      - subscriptions
+swagger: "2.0"
